@@ -1,4 +1,4 @@
-<? php
+<?php
     session_start();
     require_once('../dbconnect.php');
 
@@ -14,32 +14,12 @@
       if ($_POST['pass'] = '') {
           $error['pass'] = 'blank';
       }
+  
     
       //ユーザー情報のinsert
       if (empty($error)) {
-           $statement = $db->prepare('INSERT INTO members SET name=?, password=?, created=NOW()');
-          $statement->execute(array(
-           $_POST['name'],
-           sha1($_POST['pass']),
-              
-          ));
-          
-          
-          $login = $db->prepare('SELECT * FROM members WHERE name=? AND password=?');
-          $login->execute(array(
-           $_POST['name'],
-           sha1($_POST['password']),
-          ));
-          $member = $login->fetch();
-          
-          if($member) {
-              $_SESSION['id'] = $member['id'];
-              $_SESSION['time'] = time();
-              $_SESSION['name'] = $member['name'];
-          }
-              
           //$_SESSION['join'] = $_POST;仮想配列となって各dataが渡される
-          header('Location: main.php');
+          header('Location: ../main.php');
           exit;
       }
   }
@@ -55,12 +35,13 @@
      <p>次のフォームにて名前とパスワードを設定しましょう。</p>
          <!----d definition 定義  dl list  dt title   dd description ---->
       
-     <form action="" id="user_data" method="post">
+     <form action="../main.php" id="user_data" method="post" enctype="multipart/form-data">
+         <input type="hidden" name="action" value="sub" />
       <dl>
           
          <dt>名前<span class="required">※必須</span></dt>
           <dd>
-           <input type="text" name="name" size="49" maxlength="255" value="">
+           <input type="text" name="name" size="49" maxlength="255" value="<?php print(htmlspecialchars($_POST['name'], ENT_QUOTES)); ?>">
               <?php if ($error['name'] === 'blank'): ?>
             <p class="error">* 名前を入力してください</p>
             <?php endif; ?>
@@ -68,7 +49,7 @@
           
           <dt>パスワードを設定してください<span class="required">※必須</span></dt>
           <dd>
-           <input type="password" name="pass" size="49" maxlength="255" value="">
+           <input type="password" name="pass" size="49" maxlength="255" value="<?php print(htmlspecialchars($_POST['password'], ENT_QUOTES)); ?>">
               
               <?php if ($error['password'] === 'length'): ?>
           <p class="error">* パスワードは4文字以上で入力してください</p>
@@ -80,7 +61,7 @@
           </dd>
          </dl>
          
-         <input type="submit" value="登録内容を送信する">
+         <input type="submit" value="登録内容を送信する" />
         </form>
         </div>
     </body>
